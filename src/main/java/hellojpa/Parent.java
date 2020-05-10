@@ -13,10 +13,10 @@ public class Parent {
 
     private String name;
 
-    //CASECADE를 사용할 수 조건
-    //1. Parent와 Child의 라이프사이클이 같을때
-    //2. 단일 소유자 일때
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    //고아객체를 사용할 수 조건
+    //1. 참조하는 곳이 하나 일 때 사용해야함
+    //2. 특정 엔티티가 개인 소유할 때 사용
+    @OneToMany(mappedBy = "parent",  cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Child> childList = new ArrayList<>();
 
     public void addChild(Child child){
@@ -38,5 +38,13 @@ public class Parent {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Child> getChildList() {
+        return childList;
+    }
+
+    public void setChildList(List<Child> childList) {
+        this.childList = childList;
     }
 }

@@ -1,7 +1,8 @@
 package hellojpa;
 
-        import javax.persistence.*;
-        import java.util.List;
+import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
 
@@ -16,21 +17,39 @@ public class JpaMain {
 
         try {
 
-            Address address = new Address("city","street","100");
-
             Member member = new Member();
-            member.setUsername("용수");
-            member.setHomeAddress(address);
+            member.setUsername("member1");
+            member.setHomeAddress(new Address("city1", "street", "1000"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("족발");
+            member.getFavoriteFoods().add("피자");
+
+            member.getAddressHistory().add(new AddressEntity("old1", "street", "10000"));
+            member.getAddressHistory().add(new AddressEntity("old2", "street", "10000"));
+
             em.persist(member);
 
-            Address newAddress = new Address("NewCity",address.getStreet(),address.getZipcode());
-            member.setHomeAddress(newAddress);
+            em.flush();
+            em.clear();
+
+            System.out.println("============= START ===================");
+            Member findMember = em.find(Member.class, member.getId());
+
+            Address a = findMember.getHomeAddress();
+            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode()));
+
+            findMember.getFavoriteFoods().remove("치킨");
+            findMember.getFavoriteFoods().add("한식");
+
+            findMember.getAddressHistory().remove(new AddressEntity("old1", "street", "10000"));
+            findMember.getAddressHistory().add(new AddressEntity("newCity1", "street", "10000"));
 
             tx.commit();
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             tx.rollback();
-        }finally {
+        } finally {
             em.close();
         }
         emf.close();
